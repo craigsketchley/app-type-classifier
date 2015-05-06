@@ -4,3 +4,5 @@ training_desc.csv
 training_labels.csv
 output.csv
 bin/
+.classpath
+.settings/
