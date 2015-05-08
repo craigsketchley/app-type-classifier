@@ -1,8 +1,5 @@
 .DS_Store
-training_data.csv
-training_desc.csv
-training_labels.csv
-output.csv
+data/
 bin/
 .classpath
 .settings/
