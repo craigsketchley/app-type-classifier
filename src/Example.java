@@ -9,10 +9,18 @@ import classifier.AppCategoryClassifier;
 public class Example {
 
 	public static void main(String[] args) {
-				
+
 		try {
-//			AppCategoryClassifier app = new AppCategoryClassifier("data/training_data_sm.csv", "data/training_labels_sm.csv");
-			AppCategoryClassifier app = new AppCategoryClassifier("data/preprocessed_sm.csv");
+			AppCategoryClassifier app = null;
+			if (args.length == 1) {
+				app = new AppCategoryClassifier(args[0]);
+			} else if (args.length >= 2) {
+				app = new AppCategoryClassifier(args[0], args[1]);
+			} else {
+				System.out.println("Please provide input files as arguments");
+				return;
+			}
+
 
 			app.evaluate();
 						

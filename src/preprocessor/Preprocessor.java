@@ -20,7 +20,11 @@ import net.sf.javaml.core.Dataset;
 public class Preprocessor {
 
 	public static void main(String[] args) {
-		processTrainingFiles("data/training_data.csv", "data/training_labels.csv");
+		if (args.length == 2) {
+			processTrainingFiles(args[0], args[1]);
+		} else if (args.length >= 3) {
+			processTrainingFiles(args[0], args[1], args[2]);
+		}
 	}
 	
 	
