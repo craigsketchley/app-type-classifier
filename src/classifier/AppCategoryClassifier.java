@@ -67,6 +67,10 @@ public class AppCategoryClassifier implements Serializable {
 		this.reset();
 	}
 	
+	public void setClassifier(Classifier newClassifier){
+		this.classifier = newClassifier;
+	}
+	
 	
 	/**
 	 * Resets classifier, requires training again before use.

@@ -2,6 +2,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import net.sf.javaml.classification.Classifier;
+import net.sf.javaml.classification.bayes.NaiveBayesClassifier;
+import net.sf.javaml.classification.KNearestNeighbors;
+import net.sf.javaml.classification.ZeroR;
 
 import classifier.AppCategoryClassifier;
 
@@ -21,8 +25,27 @@ public class Example {
 				return;
 			}
 
-
+			System.out.println("Running Naive Bayes Classifier");
 			app.evaluate();
+			
+
+			//START EXTRA FOR TESTING
+			System.out.println("Running 3 Nearest Neighbours Classifier");
+			app.setClassifier(new KNearestNeighbors(3));
+			app.evaluate();
+			
+			System.out.println("Running 5 Nearest Neighbours Classifier");
+			app.setClassifier(new KNearestNeighbors(5));
+			app.evaluate();
+			
+			System.out.println("Running 7 Nearest Neighbours Classifier");
+			app.setClassifier(new KNearestNeighbors(7));
+			app.evaluate();
+			
+			System.out.println("Running Zero R");
+			app.setClassifier(new ZeroR());
+			app.evaluate();
+			//END EXTRA FOR TESTING
 						
 //	        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("data/model.ser")));
 //			// do the magic  
