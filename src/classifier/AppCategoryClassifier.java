@@ -2,8 +2,13 @@ package classifier;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Map;
@@ -12,7 +17,6 @@ import java.util.Set;
 import preprocessor.Preprocessor;
 import util.App;
 import net.sf.javaml.classification.Classifier;
-import net.sf.javaml.classification.bayes.NaiveBayesClassifier;
 import net.sf.javaml.classification.evaluation.CrossValidation;
 import net.sf.javaml.classification.evaluation.PerformanceMeasure;
 import net.sf.javaml.core.Dataset;
@@ -23,6 +27,12 @@ import net.sf.javaml.featureselection.subset.GreedyForwardSelection;
 import net.sf.javaml.filter.RetainAttributes;
 import net.sf.javaml.tools.data.FileHandler;
 
+/**
+ * 
+ * @author Nick Hough
+ * @author Craig Sketchley
+ *
+ */
 public class AppCategoryClassifier implements Serializable {
 
 	// Serialisation version number
@@ -41,18 +51,20 @@ public class AppCategoryClassifier implements Serializable {
 	 * @param trainingLabelsFilename
 	 * @throws IOException
 	 */
-	public AppCategoryClassifier(String trainingDataFilename, String trainingLabelsFilename) throws IOException {
+	public AppCategoryClassifier(ClassifierType classifierType, String trainingDataFilename, String trainingLabelsFilename) throws IOException {
 		if (App.DEBUG) {
-			System.out.println("Preprocessing files...");				
+			System.out.println("Preprocessing files...");
 		}
 		
 		this.processedFilename = Preprocessor.processTrainingFiles(trainingDataFilename, trainingLabelsFilename);
 	
 		if (App.DEBUG) {
-			System.out.println("Files processed...");				
+			System.out.println("Files processed...");
 		}
 		
-		this.reset();
+		this.setClassifier(classifierType);
+
+		this.loadData();
 	}
 
 	/**
@@ -61,22 +73,35 @@ public class AppCategoryClassifier implements Serializable {
 	 * @param processedFilename
 	 * @throws IOException
 	 */
-	public AppCategoryClassifier(String processedFilename) throws IOException {
+	public AppCategoryClassifier(ClassifierType classifierType, String processedFilename) throws IOException {
 		this.processedFilename = processedFilename;
 		
-		this.reset();
+		this.setClassifier(classifierType);
+
+		this.loadData();
 	}
 	
-	public void setClassifier(Classifier newClassifier){
-		this.classifier = newClassifier;
+	public AppCategoryClassifier(ClassifierType classifierType) {
+		
+		
 	}
-	
 	
 	/**
-	 * Resets classifier, requires training again before use.
-	 * @throws IOException 
+	 * Set the classifier type.
+	 * 
+	 * @param type
 	 */
-	public void reset() throws IOException {
+	public void setClassifier(ClassifierType type){
+		this.classifier = type.getClassifier();
+		this.trained = false;
+	}
+	
+	/**
+	 * Load the data from the preprocessed file.
+	 * 
+	 * @throws IOException
+	 */
+	private void loadData() throws IOException {
 		if (App.DEBUG) {
 			System.out.println("Loading processed file...");				
 		}
@@ -102,16 +127,11 @@ public class AppCategoryClassifier implements Serializable {
 		RetainAttributes filter = new RetainAttributes(selectedFeatures);
 		filter.build(this.data);
 		filter.filter(this.data);
-
-		this.classifier = new NaiveBayesClassifier(true, true, false);
-		this.selectedFeatures = null;
-		this.trained = false;
 	}
-
+	
 	/**
 	 * Trains the classifier from the data.
 	 * 
-	 * @throws IOException
 	 */
 	public void train() {
 		if (!this.trained) {
@@ -223,5 +243,39 @@ public class AppCategoryClassifier implements Serializable {
 		return null;
 	}
 	
+	/**
+	 * Save the selected features to use again.
+	 * 
+	 * @param filename
+	 * @throws IOException
+	 */
+	public void saveSelectedFeatures(String filename) throws IOException {
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(filename)));
+		// do the magic  
+		oos.writeObject(this.selectedFeatures);
+		// close the writing.
+		oos.close();
+	}
+	
+	/**
+	 * Loads the selected features from a previous feature selection.
+	 * 
+	 * @param filename
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	private void loadSelectedFeatures(String filename) throws FileNotFoundException, IOException {
+		ObjectInputStream oos = new ObjectInputStream(                                 
+                new FileInputStream(  new File(filename)) ) ;
+		try {
+			this.selectedFeatures = (Set<Integer>)oos.readObject();
+		} catch (ClassNotFoundException e) {
+			System.out.println("File is not a recognised format. Is it corrupt?");
+		} catch (RuntimeException e) {
+			System.out.println("File is not a recognised format. Is it corrupt?");
+		}
+		oos.close();
+	}
 
 }

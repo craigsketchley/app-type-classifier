@@ -3,6 +3,7 @@ package util;
 /**
  * Static class containing project constants.
  * 
+ * @author Nick Hough
  * @author Craig Sketchley
  *
  */

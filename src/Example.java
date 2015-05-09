@@ -1,16 +1,14 @@
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import net.sf.javaml.classification.Classifier;
-import net.sf.javaml.classification.bayes.NaiveBayesClassifier;
-import net.sf.javaml.classification.KNearestNeighbors;
-import net.sf.javaml.classification.ZeroR;
-import net.sf.javaml.classification.tree.RandomForest;
 
 import classifier.AppCategoryClassifier;
+import classifier.ClassifierType;
 
-
+/**
+ * 
+ * @author Nick Hough
+ * @author Craig Sketchley
+ *
+ */
 public class Example {
 
 	public static void main(String[] args) {
@@ -18,65 +16,27 @@ public class Example {
 		try {
 			AppCategoryClassifier app = null;
 			if (args.length == 1) {
-				app = new AppCategoryClassifier(args[0]);
+				app = new AppCategoryClassifier(
+						ClassifierType.NAIVE_BAYES, args[0]);
 			} else if (args.length >= 2) {
-				app = new AppCategoryClassifier(args[0], args[1]);
+				app = new AppCategoryClassifier(
+						ClassifierType.NAIVE_BAYES, args[0], args[1]);
 			} else {
 				System.out.println("Please provide input files as arguments");
 				return;
 			}
 
-			System.out.println("Running Naive Bayes Classifier");
-			app.evaluate();
-			
+			// Testing different classifiers...
+			for (ClassifierType type : ClassifierType.values()) {
+				System.out.println("Running " + type);
+				app.setClassifier(type);
+				app.evaluate();
+			}
 
-			//START EXTRA FOR TESTING
-			
-			//Nearest neighbours took forever!!!!!!!!
-			/*
-			System.out.println("Running 3 Nearest Neighbours Classifier");
-			app.setClassifier(new KNearestNeighbors(3));
-			app.evaluate();
-			
-			System.out.println("Running 5 Nearest Neighbours Classifier");
-			app.setClassifier(new KNearestNeighbors(5));
-			app.evaluate();
-			
-			System.out.println("Running 7 Nearest Neighbours Classifier");
-			app.setClassifier(new KNearestNeighbors(7));
-			app.evaluate();
-			*/
-			
-			System.out.println("Running Zero R");
-			app.setClassifier(new ZeroR());
-			app.evaluate();
-			
-			System.out.println("Random Forest - 50 Trees");
-			app.setClassifier(new RandomForest(50));
-			app.evaluate();
-			
-			System.out.println("Random Forest - 100 Trees");
-			app.setClassifier(new RandomForest(100));
-			app.evaluate();
-			
-			System.out.println("Random Forest - 200 Trees");
-			app.setClassifier(new RandomForest(200));
-			app.evaluate();
-			//END EXTRA FOR TESTING
-						
-//	        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("data/model.ser")));
-//			// do the magic  
-//			oos.writeObject(app);
-//			// close the writing.
-//			oos.close();
-
-			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
-	
+
 	}
 
 }
