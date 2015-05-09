@@ -1,0 +1,131 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf140
+{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww19660\viewh8400\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural
+
+\f0\fs22 \cf0 \CocoaLigature0 ########## TEST 1 - SMALL DATA, NAIVE BAYES, 100 Features ##########\
+\
+[ec2-user@ip-172-31-18-22 DataMiningAss]$ java -cp bin:"lib/*" Example data/preprocessed_sm.csv \
+Loading processed file...\
+Feature selection...\
+Filtering selected features...\
+Creating evaluator...\
+Evaluating...\
+Done evaluating...\
+[TP=0.0, FP=0.0, TN=4915.0, FN=85.0]\
+[TP=0.0, FP=0.0, TN=4848.0, FN=152.0]\
+[TP=0.0, FP=0.0, TN=4852.0, FN=148.0]\
+[TP=0.0, FP=7.0, TN=4813.0, FN=180.0]\
+[TP=0.0, FP=0.0, TN=4825.0, FN=175.0]\
+[TP=0.0, FP=0.0, TN=4819.0, FN=181.0]\
+[TP=0.0, FP=0.0, TN=4825.0, FN=175.0]\
+[TP=0.0, FP=0.0, TN=4896.0, FN=104.0]\
+[TP=0.0, FP=2.0, TN=4821.0, FN=177.0]\
+[TP=0.0, FP=0.0, TN=4837.0, FN=163.0]\
+[TP=2.0, FP=0.0, TN=4873.0, FN=125.0]\
+[TP=5.0, FP=12.0, TN=4800.0, FN=183.0]\
+[TP=0.0, FP=0.0, TN=4835.0, FN=165.0]\
+[TP=0.0, FP=0.0, TN=4841.0, FN=159.0]\
+[TP=162.0, FP=3824.0, TN=977.0, FN=37.0]\
+[TP=0.0, FP=0.0, TN=4839.0, FN=161.0]\
+[TP=0.0, FP=0.0, TN=4826.0, FN=174.0]\
+[TP=24.0, FP=609.0, TN=4198.0, FN=169.0]\
+[TP=0.0, FP=0.0, TN=4832.0, FN=168.0]\
+[TP=0.0, FP=4.0, TN=4812.0, FN=184.0]\
+[TP=0.0, FP=4.0, TN=4806.0, FN=190.0]\
+[TP=0.0, FP=0.0, TN=4833.0, FN=167.0]\
+[TP=0.0, FP=5.0, TN=4814.0, FN=181.0]\
+[TP=38.0, FP=286.0, TN=4512.0, FN=164.0]\
+[TP=1.0, FP=0.0, TN=4833.0, FN=166.0]\
+[TP=0.0, FP=0.0, TN=4832.0, FN=168.0]\
+[TP=8.0, FP=0.0, TN=4806.0, FN=186.0]\
+[TP=0.0, FP=0.0, TN=4882.0, FN=118.0]\
+[TP=1.0, FP=5.0, TN=4816.0, FN=178.0]\
+[TP=0.0, FP=1.0, TN=4823.0, FN=176.0]\
+\
+\
+\
+########## TEST 2 - FULL DATA, NAIVE BAYES, 100 Features ##########\
+\
+[ec2-user@ip-172-31-18-22 DataMiningAss]$ java -cp bin:"lib/*" Example data/training_data.csv data/training_labels.csv\
+Preprocessing files...\
+Files processed...\
+Loading processed file...\
+Feature selection...\
+Filtering selected features...\
+Creating evaluator...\
+Evaluating...\
+Done evaluating...\
+[TP=0.0, FP=0.0, TN=19745.0, FN=359.0]\
+[TP=35.0, FP=371.0, TN=19017.0, FN=681.0]\
+[TP=11.0, FP=0.0, TN=19483.0, FN=610.0]\
+[TP=84.0, FP=1466.0, TN=17912.0, FN=642.0]\
+[TP=50.0, FP=962.0, TN=18416.0, FN=676.0]\
+[TP=8.0, FP=11.0, TN=19377.0, FN=708.0]\
+[TP=47.0, FP=511.0, TN=18868.0, FN=678.0]\
+[TP=0.0, FP=0.0, TN=19672.0, FN=432.0]\
+[TP=0.0, FP=1.0, TN=19446.0, FN=657.0]\
+[TP=0.0, FP=26.0, TN=19386.0, FN=692.0]\
+[TP=23.0, FP=0.0, TN=19620.0, FN=461.0]\
+[TP=52.0, FP=137.0, TN=19244.0, FN=671.0]\
+[TP=7.0, FP=82.0, TN=19320.0, FN=695.0]\
+[TP=0.0, FP=5.0, TN=19415.0, FN=684.0]\
+[TP=79.0, FP=518.0, TN=18856.0, FN=651.0]\
+[TP=66.0, FP=18.0, TN=19383.0, FN=637.0]\
+[TP=12.0, FP=10.0, TN=19423.0, FN=659.0]\
+[TP=187.0, FP=3943.0, TN=15423.0, FN=551.0]\
+[TP=8.0, FP=84.0, TN=19311.0, FN=701.0]\
+[TP=425.0, FP=8686.0, TN=10652.0, FN=341.0]\
+[TP=48.0, FP=36.0, TN=19369.0, FN=651.0]\
+[TP=66.0, FP=88.0, TN=19273.0, FN=677.0]\
+[TP=81.0, FP=787.0, TN=18602.0, FN=634.0]\
+[TP=108.0, FP=410.0, TN=18968.0, FN=618.0]\
+[TP=102.0, FP=54.0, TN=19340.0, FN=608.0]\
+[TP=12.0, FP=3.0, TN=19447.0, FN=642.0]\
+[TP=26.0, FP=6.0, TN=19385.0, FN=687.0]\
+[TP=0.0, FP=0.0, TN=19625.0, FN=479.0]\
+[TP=156.0, FP=193.0, TN=19182.0, FN=573.0]\
+[TP=0.0, FP=3.0, TN=19445.0, FN=656.0]\
+\
+########## TEST 3 - SMALL DATA, NAIVE BAYES, 200 Features ##########\
+\
+[ec2-user@ip-172-31-18-22 DataMiningAss]$ javac -cp "lib/*" -d bin src/classifier/*.java src/preprocessor/*.java src/util/*.java src/Example.java\
+[ec2-user@ip-172-31-18-22 DataMiningAss]$ java -cp bin:"lib/*" Example data/preprocessed_sm.csv \
+Loading processed file...\
+Feature selection...\
+Filtering selected features...\
+Running Naive Bayes Classifier\
+Creating evaluator...\
+Evaluating...\
+Done evaluating...\
+[TP=0.0, FP=0.0, TN=4915.0, FN=85.0]\
+[TP=0.0, FP=0.0, TN=4848.0, FN=152.0]\
+[TP=0.0, FP=0.0, TN=4852.0, FN=148.0]\
+[TP=0.0, FP=1.0, TN=4819.0, FN=180.0]\
+[TP=0.0, FP=0.0, TN=4825.0, FN=175.0]\
+[TP=0.0, FP=0.0, TN=4819.0, FN=181.0]\
+[TP=0.0, FP=0.0, TN=4825.0, FN=175.0]\
+[TP=0.0, FP=0.0, TN=4896.0, FN=104.0]\
+[TP=0.0, FP=1.0, TN=4822.0, FN=177.0]\
+[TP=0.0, FP=0.0, TN=4837.0, FN=163.0]\
+[TP=1.0, FP=0.0, TN=4873.0, FN=126.0]\
+[TP=3.0, FP=2.0, TN=4810.0, FN=185.0]\
+[TP=0.0, FP=0.0, TN=4835.0, FN=165.0]\
+[TP=0.0, FP=0.0, TN=4841.0, FN=159.0]\
+[TP=122.0, FP=2939.0, TN=1862.0, FN=77.0]\
+[TP=0.0, FP=0.0, TN=4839.0, FN=161.0]\
+[TP=0.0, FP=0.0, TN=4826.0, FN=174.0]\
+[TP=59.0, FP=1506.0, TN=3301.0, FN=134.0]\
+[TP=0.0, FP=0.0, TN=4832.0, FN=168.0]\
+[TP=0.0, FP=0.0, TN=4816.0, FN=184.0]\
+[TP=0.0, FP=1.0, TN=4809.0, FN=190.0]\
+[TP=0.0, FP=0.0, TN=4833.0, FN=167.0]\
+[TP=0.0, FP=0.0, TN=4819.0, FN=181.0]\
+[TP=45.0, FP=311.0, TN=4487.0, FN=157.0]\
+[TP=1.0, FP=0.0, TN=4833.0, FN=166.0]\
+[TP=0.0, FP=0.0, TN=4832.0, FN=168.0]\
+[TP=8.0, FP=0.0, TN=4806.0, FN=186.0]\
+[TP=0.0, FP=0.0, TN=4882.0, FN=118.0]\
+[TP=0.0, FP=0.0, TN=4821.0, FN=179.0]\
+[TP=0.0, FP=0.0, TN=4824.0, FN=176.0]}

@@ -6,6 +6,7 @@ import net.sf.javaml.classification.Classifier;
 import net.sf.javaml.classification.bayes.NaiveBayesClassifier;
 import net.sf.javaml.classification.KNearestNeighbors;
 import net.sf.javaml.classification.ZeroR;
+import net.sf.javaml.classification.tree.RandomForest;
 
 import classifier.AppCategoryClassifier;
 
@@ -30,6 +31,9 @@ public class Example {
 			
 
 			//START EXTRA FOR TESTING
+			
+			//Nearest neighbours took forever!!!!!!!!
+			/*
 			System.out.println("Running 3 Nearest Neighbours Classifier");
 			app.setClassifier(new KNearestNeighbors(3));
 			app.evaluate();
@@ -41,9 +45,22 @@ public class Example {
 			System.out.println("Running 7 Nearest Neighbours Classifier");
 			app.setClassifier(new KNearestNeighbors(7));
 			app.evaluate();
+			*/
 			
 			System.out.println("Running Zero R");
 			app.setClassifier(new ZeroR());
+			app.evaluate();
+			
+			System.out.println("Random Forest - 50 Trees");
+			app.setClassifier(new RandomForest(50));
+			app.evaluate();
+			
+			System.out.println("Random Forest - 100 Trees");
+			app.setClassifier(new RandomForest(100));
+			app.evaluate();
+			
+			System.out.println("Random Forest - 200 Trees");
+			app.setClassifier(new RandomForest(200));
 			app.evaluate();
 			//END EXTRA FOR TESTING
 						
