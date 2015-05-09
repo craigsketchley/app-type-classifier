@@ -99,7 +99,7 @@ public class AppCategoryClassifier implements Serializable {
 		filter.build(this.data);
 		filter.filter(this.data);
 
-		this.classifier = new NaiveBayesClassifier(false, false, false);
+		this.classifier = new NaiveBayesClassifier(true, true, false);
 		this.selectedFeatures = null;
 		this.trained = false;
 	}
