@@ -22,10 +22,10 @@ public class Example {
 			AppCategoryClassifier app = null;
 			if (args.length == 2) {
 				app = new AppCategoryClassifier(
-						ClassifierType.NAIVE_BAYES, args[1]);
+						ClassifierType.SVM, args[1]);
 			} else if (args.length >= 3) {
 				app = new AppCategoryClassifier(
-						ClassifierType.NAIVE_BAYES, args[1], args[2]);
+						ClassifierType.SVM, args[1], args[2]);
 			} else {
 				System.out.println("Please provide input files as arguments");
 				return;
@@ -38,12 +38,16 @@ public class Example {
 				app.selectFeatures();
 			}
 			
-			// Testing different classifiers...
-			for (ClassifierType type : ClassifierType.values()) {
-				System.out.println("Running " + type);
-				app.setClassifier(type);
-				app.evaluate();
-			}
+			app.saveSelectedFeatures("data/selectedFeatures.ser");
+			
+			app.evaluate();
+			
+//			// Testing different classifiers...
+//			for (ClassifierType type : ClassifierType.values()) {
+//				System.out.println("Running " + type);
+//				app.setClassifier(type);
+//				app.evaluate();
+//			}
 
 		} catch (IOException e) {
 			e.printStackTrace();

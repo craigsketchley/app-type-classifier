@@ -23,6 +23,7 @@ public enum ClassifierType {
 	RANDOM_FOREST200,
 	SOM;
 	
+	@SuppressWarnings("static-access")
 	public Classifier getClassifier() {
 		Classifier result = null;
 		
@@ -32,6 +33,7 @@ public enum ClassifierType {
 			break;
 		case SVM:
 			result = new LibSVM();
+			((LibSVM)result).setPrintInterface(LibSVM.svm_print_console);
 			break;
 		case ZEROR:
 			result = new ZeroR();
