@@ -19,10 +19,19 @@ import util.App;
 public class Preprocessor {
 
 	public static void main(String[] args) {
-		if (args.length == 2) {
-			processTrainingFiles(args[0], args[1]);
-		} else if (args.length >= 3) {
-			processTrainingFiles(args[0], args[1], args[2]);
+		if (args.length > 1) {
+			if (args[0].equals("-tfidf")) {
+				if (args.length >= 3) {
+					System.out.println("generating tfidf");
+					generateTfIdf(args[1], args[2]);
+				}
+			} else {
+				if (args.length == 2) {
+					processTrainingFiles(args[0], args[1]);
+				} else if (args.length >= 3) {
+					processTrainingFiles(args[0], args[1], args[2]);
+				}	
+			}
 		}
 	}
 	
@@ -93,6 +102,117 @@ public class Preprocessor {
 		
 		return outputFilename;
 	}
+	
+	
+	
+	public static void generateTfIdf(String descriptionFilename, String outputFilename) {
+		// Map for all the words in a document and their counts within that document.
+		HashMap<String, HashMap<String, Integer>> docMap = new HashMap<String, HashMap<String, Integer>>();
+		
+		// Map for all words and their document count
+		HashMap<String, Integer> wordDocCount = new HashMap<String, Integer>();
+				
+		try {
+			FileReader descReader = new FileReader(new File(descriptionFilename));
+
+			// Variable to hold the one line data
+			String line;
+
+			// Read in the tf-idf values
+			BufferedReader br = new BufferedReader(descReader);
+			
+			// Read file line by line...
+			while ((line = br.readLine()) != null) {
+				// Split the app name from description words
+				String[] words = line.split(App.DELIMITER);
+				
+				docMap.put(words[0], new HashMap<String, Integer>());
+				
+				// App name is at index 0
+				for (int i = 1; i < words.length; i++) {
+					if (!docMap.get(words[0]).containsKey(words[i])) {
+						if (wordDocCount.containsKey(words[i])) {
+							wordDocCount.put(words[i], wordDocCount.get(words[i]) + 1);
+						} else {
+							wordDocCount.put(words[i], 1);
+						}
+					}
+					if (docMap.get(words[0]).containsKey(words[i])) {
+						docMap.get(words[0]).put(words[i], docMap.get(words[0]).get(words[i]) + 1);
+					} else {
+						docMap.get(words[0]).put(words[i], 1);
+					}
+				}
+			}
+			
+			br.close();
+			br = null;
+			
+			System.out.println("Done scanning file.");
+			
+			String[] words = wordDocCount.keySet().toArray(new String[wordDocCount.size()]);
+			String[] apps = docMap.keySet().toArray(new String[docMap.size()]);
+			
+			
+			// Now get the if-idf values...
+			double[][] output = new double[docMap.size()][wordDocCount.size()];
+			
+			System.out.println("Doc count: " + apps.length);
+			
+			for (int appIndex = 0; appIndex < output.length; appIndex++) {
+				for (int wordIndex = 0; wordIndex < output[appIndex].length; wordIndex++) {
+					output[appIndex][wordIndex] =
+							docMap.get(apps[appIndex]).get(words[wordIndex]) *       // tf
+							(Math.log(((double) apps.length) / wordDocCount.get(words[wordIndex]))); // idf
+					if (output[appIndex][wordIndex] < 0) {
+						System.out.println("tf: " + docMap.get(apps[appIndex]).get(words[wordIndex]));
+						System.out.println("idf: " + (Math.log(((double) apps.length) / wordDocCount.get(words[wordIndex]))));
+						System.out.println("No of docs with word in: " + wordDocCount.get(words[wordIndex]));
+					}
+				}
+			}
+			
+			// Normalise each app tf-idf vector to unit vector...
+			double mag;
+			for (int vecIndex = 0; vecIndex < output.length; vecIndex++) {
+				mag = 0;
+				for (int i = 0; i < output[vecIndex].length; i++) {
+					mag += output[vecIndex][i] * output[vecIndex][i];
+				}
+				mag = Math.sqrt(mag);
+
+				for (int i = 0; i < output[vecIndex].length; i++) {
+					double normVal = (mag != 0) ? output[vecIndex][i] / mag : 0;
+					output[vecIndex][i] = normVal;
+				}
+			}
+			
+			PrintWriter writer = new PrintWriter(outputFilename, "UTF-8");
+
+			for (int appIndex = 0; appIndex < output.length; appIndex++) {
+				writer.write(apps[appIndex]);
+				for (int wordIndex = 0; wordIndex < output[appIndex].length; wordIndex++) {
+					if (output[appIndex][wordIndex] == 0) {
+						writer.write(App.DELIMITER + 0);
+					} else {
+						writer.write(App.DELIMITER + output[appIndex][wordIndex]);
+					}
+				}
+				writer.write("\n");
+			}
+			
+			writer.close();
+			
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found: " + e.getMessage());
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("Input/Ouput problem: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+	
 	
 	// Hide constructor, make it a static only class...
 	private Preprocessor() {}
