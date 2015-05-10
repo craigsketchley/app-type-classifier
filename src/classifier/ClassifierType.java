@@ -15,8 +15,8 @@ import net.sf.javaml.clustering.SOM.NeighbourhoodFunction;
  *
  */
 public enum ClassifierType {
-	NAIVE_BAYES,
 	SVM,
+	NAIVE_BAYES,
 	ZEROR,
 	RANDOM_FOREST50,
 	RANDOM_FOREST100,
@@ -27,11 +27,11 @@ public enum ClassifierType {
 		Classifier result = null;
 		
 		switch (this) {
-		case NAIVE_BAYES:
-			result = new NaiveBayesClassifier(true, true, false);
-			break;
 		case SVM:
 			result = new LibSVM();
+			break;
+		case NAIVE_BAYES:
+			result = new NaiveBayesClassifier(true, true, false);
 			break;
 		case ZEROR:
 			result = new ZeroR();
