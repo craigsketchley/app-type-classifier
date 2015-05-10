@@ -155,15 +155,19 @@ public class Preprocessor {
 			
 			
 			// Now get the if-idf values...
-			double[][] output = new double[docMap.size()][wordDocCount.size()];
+			double[][] output = new double[apps.length][words.length];
 			
 			System.out.println("Doc count: " + apps.length);
 			
 			for (int appIndex = 0; appIndex < output.length; appIndex++) {
 				for (int wordIndex = 0; wordIndex < output[appIndex].length; wordIndex++) {
-					output[appIndex][wordIndex] =
-							docMap.get(apps[appIndex]).get(words[wordIndex]) *       // tf
-							(Math.log(((double) apps.length) / wordDocCount.get(words[wordIndex]))); // idf
+					if (docMap.get(apps[appIndex]).containsKey(words[wordIndex])) {
+						output[appIndex][wordIndex] = 
+								docMap.get(apps[appIndex]).get(words[wordIndex]) *                       // tf
+								(Math.log(((double) apps.length) / wordDocCount.get(words[wordIndex]))); // idf						
+					} else {
+						output[appIndex][wordIndex] = 0;
+					}
 					if (output[appIndex][wordIndex] < 0) {
 						System.out.println("tf: " + docMap.get(apps[appIndex]).get(words[wordIndex]));
 						System.out.println("idf: " + (Math.log(((double) apps.length) / wordDocCount.get(words[wordIndex]))));
