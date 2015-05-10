@@ -26,6 +26,7 @@ import net.sf.javaml.distance.PearsonCorrelationCoefficient;
 import net.sf.javaml.featureselection.subset.GreedyForwardSelection;
 import net.sf.javaml.filter.RetainAttributes;
 import net.sf.javaml.tools.data.FileHandler;
+import net.sf.javaml.distance.*;
 
 /**
  * 
@@ -113,10 +114,11 @@ public class AppCategoryClassifier implements Serializable {
 			System.out.println("Feature selection...");				
 		}
 		
+		/*
 		// Select features of data...
 		GreedyForwardSelection featureSel = new GreedyForwardSelection(
 				App.NUM_OF_FEATURES,
-				new PearsonCorrelationCoefficient());
+				new SpearmanRankCorrelation());
 		featureSel.build(this.data);
 		this.selectedFeatures = featureSel.selectedAttributes();
 
@@ -127,6 +129,7 @@ public class AppCategoryClassifier implements Serializable {
 		RetainAttributes filter = new RetainAttributes(selectedFeatures);
 		filter.build(this.data);
 		filter.filter(this.data);
+		*/
 	}
 	
 	/**
