@@ -154,7 +154,7 @@ public class AppCategoryClassifier implements Serializable {
 	 * 
 	 */
 	public void train() {
-		if (this.selected && this.loaded) {
+		if (this.loaded) {
 			// Train model...
 			if (App.DEBUG) {
 				System.out.println("Training model...");				
@@ -167,8 +167,6 @@ public class AppCategoryClassifier implements Serializable {
 			}
 			
 			this.trained = true;
-		} else if (this.loaded) {
-			System.out.println("Need to run feature selection before training.");
 		} else {
 			System.out.println("Need to load the data before training.");
 		}
@@ -179,7 +177,7 @@ public class AppCategoryClassifier implements Serializable {
 	 * 
 	 */
 	public void evaluate() {
-		if (this.selected && this.loaded) {
+		if (this.loaded) {
 			if (App.DEBUG) {
 				System.out.println("Creating evaluator...");				
 			}
@@ -197,11 +195,25 @@ public class AppCategoryClassifier implements Serializable {
 				System.out.println("Done evaluating...");				
 			}
 			
+			double precision = 0;
+			double recall = 0;
+			double accuracy = 0;
+			int count = 0;
+			
 			for (Object c : perform.keySet()) {
-				System.out.println(perform.get(c));
+				System.out.println("TF/PN:     " + perform.get(c));
+				accuracy += perform.get(c).getAccuracy();
+				System.out.println("Accuracy:  " + perform.get(c).getAccuracy());
+				precision += perform.get(c).getPrecision();
+				System.out.println("Precision: " + perform.get(c).getPrecision());
+				recall += perform.get(c).getRecall();
+				System.out.println("Recall:    " + perform.get(c).getRecall());
+				count++;
 			}
-		} else if (this.loaded) {
-			System.out.println("Need to run feature selection before evaluating.");
+			
+			System.out.println("Accuracy Avg:  " + (accuracy / count));
+			System.out.println("Precision Avg: " + (precision / count));
+			System.out.println("Recall Avg:    " + (recall / count));
 		} else {
 			System.out.println("Need to load the data before evaluating.");
 		}
@@ -224,7 +236,7 @@ public class AppCategoryClassifier implements Serializable {
 	 * @throws IOException 
 	 */
 	public void classify(String inputFilename, String outputFilename) throws IOException {
-		if (this.selected && this.loaded) {
+		if (this.loaded) {
 			// Load data...
 			FileReader labelsReader = new FileReader(new File(inputFilename));
 			PrintWriter writer = new PrintWriter(outputFilename, "UTF-8");
@@ -255,8 +267,6 @@ public class AppCategoryClassifier implements Serializable {
 		
 			br.close();
 			writer.close();
-		} else if (this.loaded) {
-			System.out.println("Need to run feature selection before classifying.");
 		} else {
 			System.out.println("Need to load the data before classifying.");
 		}
@@ -269,7 +279,7 @@ public class AppCategoryClassifier implements Serializable {
 	 * @return
 	 */
 	private String classify(Instance inst) {
-		if (this.selected && this.loaded) {
+		if (this.loaded) {
 			return this.classifier.classify(inst).toString();			
 		} else if (this.loaded) {
 			System.out.println("Need to run feature selection before classifying.");

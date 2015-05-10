@@ -40,7 +40,6 @@ public enum ClassifierType {
 		    pre.gamma= 3;
 		    pre.degree=1;
 		    svm.setParameters(pre);
-			
 			break;
 		case ZEROR:
 			result = new ZeroR();

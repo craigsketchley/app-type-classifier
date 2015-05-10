@@ -34,10 +34,8 @@ public class Example {
 			app.loadData();
 			if (numOfFeatures > 0) {
 				app.selectFeatures(numOfFeatures);				
-			} else {
-				app.selectFeatures();
 			}
-			
+
 			app.saveSelectedFeatures("data/selectedFeatures.ser");
 			
 			app.evaluate();
