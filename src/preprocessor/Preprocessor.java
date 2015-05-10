@@ -153,11 +153,11 @@ public class Preprocessor {
 			String[] words = wordDocCount.keySet().toArray(new String[wordDocCount.size()]);
 			String[] apps = docMap.keySet().toArray(new String[docMap.size()]);
 			
-			
 			// Now get the if-idf values...
 			double[][] output = new double[apps.length][words.length];
 			
 			System.out.println("Doc count: " + apps.length);
+			System.out.println("Word count: " + words.length);
 			
 			for (int appIndex = 0; appIndex < output.length; appIndex++) {
 				for (int wordIndex = 0; wordIndex < output[appIndex].length; wordIndex++) {
