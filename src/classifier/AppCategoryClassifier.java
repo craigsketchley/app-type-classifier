@@ -42,6 +42,8 @@ public class AppCategoryClassifier implements Serializable {
 	private String processedFilename;
 	private Set<Integer> selectedFeatures;
 	private boolean trained;
+	private boolean loaded;
+	private boolean selected;
 	private Dataset data;
 	
 	/**
@@ -63,8 +65,6 @@ public class AppCategoryClassifier implements Serializable {
 		}
 		
 		this.setClassifier(classifierType);
-
-		this.loadData();
 	}
 
 	/**
@@ -77,13 +77,6 @@ public class AppCategoryClassifier implements Serializable {
 		this.processedFilename = processedFilename;
 		
 		this.setClassifier(classifierType);
-
-		this.loadData();
-	}
-	
-	public AppCategoryClassifier(ClassifierType classifierType) {
-		
-		
 	}
 	
 	/**
@@ -101,7 +94,7 @@ public class AppCategoryClassifier implements Serializable {
 	 * 
 	 * @throws IOException
 	 */
-	private void loadData() throws IOException {
+	public void loadData() throws IOException {
 		if (App.DEBUG) {
 			System.out.println("Loading processed file...");				
 		}
@@ -110,23 +103,50 @@ public class AppCategoryClassifier implements Serializable {
 		this.data = FileHandler.loadDataset(new File(this.processedFilename), 0, App.DELIMITER);
 
 		if (App.DEBUG) {
-			System.out.println("Feature selection...");				
+			System.out.println("Processed file loaded.");				
 		}
 		
-		// Select features of data...
-		GreedyForwardSelection featureSel = new GreedyForwardSelection(
-				App.NUM_OF_FEATURES,
-				new PearsonCorrelationCoefficient());
-		featureSel.build(this.data);
-		this.selectedFeatures = featureSel.selectedAttributes();
+		this.loaded = true;
+	}
+	
+	public void selectFeatures() {
+		selectFeatures(App.NUM_OF_FEATURES);
+	}
+	
+	/**
+	 * Selects and filters the data features ready for training.
+	 *  
+	 */
+	public void selectFeatures(int numOfFeatures) {
+		if (this.loaded) {
+			if (App.DEBUG) {
+				System.out.println("Feature selection...");				
+				System.out.println("Selecting " + numOfFeatures + " features.");				
+			}
+			
+			// Select features of data...
+			GreedyForwardSelection featureSel = new GreedyForwardSelection(
+					numOfFeatures,
+					new PearsonCorrelationCoefficient());
+			featureSel.build(this.data);
+			this.selectedFeatures = featureSel.selectedAttributes();
+			
+			if (App.DEBUG) {
+				System.out.println("Filtering selected features...");				
+			}
+			
+			RetainAttributes filter = new RetainAttributes(selectedFeatures);
+			filter.build(this.data);
+			filter.filter(this.data);			
 
-		if (App.DEBUG) {
-			System.out.println("Filtering selected features...");				
+			if (App.DEBUG) {
+				System.out.println("Features selected.");				
+			}
+			
+			this.selected = true;
+		} else {
+			System.out.println("Need to load the data before selecting features.");
 		}
-		
-		RetainAttributes filter = new RetainAttributes(selectedFeatures);
-		filter.build(this.data);
-		filter.filter(this.data);
 	}
 	
 	/**
@@ -134,7 +154,7 @@ public class AppCategoryClassifier implements Serializable {
 	 * 
 	 */
 	public void train() {
-		if (!this.trained) {
+		if (this.selected && this.loaded) {
 			// Train model...
 			if (App.DEBUG) {
 				System.out.println("Training model...");				
@@ -147,6 +167,10 @@ public class AppCategoryClassifier implements Serializable {
 			}
 			
 			this.trained = true;
+		} else if (this.loaded) {
+			System.out.println("Need to run feature selection before training.");
+		} else {
+			System.out.println("Need to load the data before training.");
 		}
 	}
 	
@@ -155,7 +179,7 @@ public class AppCategoryClassifier implements Serializable {
 	 * 
 	 */
 	public void evaluate() {
-		if (!this.trained) {
+		if (this.selected && this.loaded) {
 			if (App.DEBUG) {
 				System.out.println("Creating evaluator...");				
 			}
@@ -176,6 +200,10 @@ public class AppCategoryClassifier implements Serializable {
 			for (Object c : perform.keySet()) {
 				System.out.println(perform.get(c));
 			}
+		} else if (this.loaded) {
+			System.out.println("Need to run feature selection before evaluating.");
+		} else {
+			System.out.println("Need to load the data before evaluating.");
 		}
 	}
 
@@ -196,7 +224,7 @@ public class AppCategoryClassifier implements Serializable {
 	 * @throws IOException 
 	 */
 	public void classify(String inputFilename, String outputFilename) throws IOException {
-		if (this.trained) {
+		if (this.selected && this.loaded) {
 			// Load data...
 			FileReader labelsReader = new FileReader(new File(inputFilename));
 			PrintWriter writer = new PrintWriter(outputFilename, "UTF-8");
@@ -227,6 +255,10 @@ public class AppCategoryClassifier implements Serializable {
 		
 			br.close();
 			writer.close();
+		} else if (this.loaded) {
+			System.out.println("Need to run feature selection before classifying.");
+		} else {
+			System.out.println("Need to load the data before classifying.");
 		}
 	}
 	
@@ -237,8 +269,12 @@ public class AppCategoryClassifier implements Serializable {
 	 * @return
 	 */
 	private String classify(Instance inst) {
-		if (this.trained) {
+		if (this.selected && this.loaded) {
 			return this.classifier.classify(inst).toString();			
+		} else if (this.loaded) {
+			System.out.println("Need to run feature selection before classifying.");
+		} else {
+			System.out.println("Need to load the data before classifying.");
 		}
 		return null;
 	}
@@ -250,11 +286,15 @@ public class AppCategoryClassifier implements Serializable {
 	 * @throws IOException
 	 */
 	public void saveSelectedFeatures(String filename) throws IOException {
-        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(filename)));
-		// do the magic  
-		oos.writeObject(this.selectedFeatures);
-		// close the writing.
-		oos.close();
+		if (this.loaded) {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(filename)));
+			// do the magic  
+			oos.writeObject(this.selectedFeatures);
+			// close the writing.
+			oos.close();			
+		} else {
+			System.out.println("Data not loaded. Please load data before saving selected features.");
+		}
 	}
 	
 	/**
@@ -265,7 +305,7 @@ public class AppCategoryClassifier implements Serializable {
 	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")
-	private void loadSelectedFeatures(String filename) throws FileNotFoundException, IOException {
+	public void loadSelectedFeatures(String filename) throws FileNotFoundException, IOException {
 		ObjectInputStream oos = new ObjectInputStream(                                 
                 new FileInputStream(  new File(filename)) ) ;
 		try {

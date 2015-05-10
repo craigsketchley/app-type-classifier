@@ -15,13 +15,26 @@ javac -cp "lib/*" -d bin src/classifier/*.java src/preprocessor/*.java src/util/
 Use the following command to run:
 
 ```
-java -cp bin:"lib/*" Example <data file> <label file>
+java -cp bin:"lib/*" Example <num of features> <data file> <label file>
 ```
 
 So for the full data set...
 
 ```
-java -cp bin:"lib/*" Example data/training_data.csv data/training_labels.csv
+java -cp bin:"lib/*" Example 200 data/training_data.csv data/training_labels.csv
+```
+
+
+If you have a preprocessed file already, then run with a single file instead:
+
+```
+java -cp bin:"lib/*" Example <num of features> <processed file>
+```
+
+So for the full data set...
+
+```
+java -cp bin:"lib/*" Example 200 data/preprocessed.csv
 ```
 
 
