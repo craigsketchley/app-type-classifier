@@ -13,7 +13,7 @@ public final class App {
 	public static final String OUTPUT_FILENAME = "data/output.csv";
 	public static final String DELIMITER = ",";
 
-	public static final int NUM_OF_FEATURES = 200;
+	public static final int NUM_OF_FEATURES = 500;
 	public static final int NUM_OF_FOLDS = 10;
 	
 	public static final boolean DEBUG = true;

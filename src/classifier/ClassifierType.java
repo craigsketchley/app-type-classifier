@@ -17,11 +17,11 @@ import net.sf.javaml.clustering.SOM.NeighbourhoodFunction;
 public enum ClassifierType {
 	NAIVE_BAYES,
 	SVM,
-	SOM,
 	ZEROR,
 	RANDOM_FOREST50,
 	RANDOM_FOREST100,
-	RANDOM_FOREST200;
+	RANDOM_FOREST200,
+	SOM;
 	
 	public Classifier getClassifier() {
 		Classifier result = null;
@@ -32,9 +32,6 @@ public enum ClassifierType {
 			break;
 		case SVM:
 			result = new LibSVM();
-			break;
-		case SOM:
-			result = new SOM(50, 50, GridType.HEXAGONAL, 1000, 0.9, 20, LearningType.EXPONENTIAL, NeighbourhoodFunction.GAUSSIAN);
 			break;
 		case ZEROR:
 			result = new ZeroR();
@@ -47,6 +44,9 @@ public enum ClassifierType {
 			break;
 		case RANDOM_FOREST200:
 			result = new RandomForest(200);
+			break;
+		case SOM:
+			result = new SOM(50, 50, GridType.HEXAGONAL, 1000, 0.9, 20, LearningType.EXPONENTIAL, NeighbourhoodFunction.GAUSSIAN);
 			break;
 		}
 		
