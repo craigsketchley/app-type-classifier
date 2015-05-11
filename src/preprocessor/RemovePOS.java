@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import opennlp.tools.*;
 import opennlp.tools.postag.POSModel;
 import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.tokenize.Tokenizer;
