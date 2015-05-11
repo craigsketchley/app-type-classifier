@@ -290,13 +290,16 @@ public class AppCategoryClassifier implements Serializable {
 					}
 				}
 				
-				double [] tfidfs = new double[words.length - 1];
+				double[] tfidfs = new double[wordList.size()];
 				
 				for (int i = 0; i < tfidfs.length; i++) {
-					tfidfs[i] = Preprocessor.calcTfIdf(docMap.get(words[i+1]), wordDocCounts.get(words[i+1]), this.docCount);
+					if (docMap.containsKey(wordList.get(i))) {
+						tfidfs[i] = Preprocessor.calcTfIdf(docMap.get(wordList.get(i)), wordDocCounts.get(wordList.get(i)), this.docCount);													
+					} else {
+						tfidfs[i] = 0.0;
+					}
 				}
-				
-				
+								
 				Instance inst = new DenseInstance(tfidfs);
 				
 				// Write the category name and tf-idf values to 
