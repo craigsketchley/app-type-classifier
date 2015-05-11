@@ -37,7 +37,7 @@ public class Example {
 			app.train();
 			
 			// Test of classfication
-			app.classifyDesc("test_input.csv", App.WORDS_FILENAME);
+			app.classifyDesc("test_input1.csv", App.WORDS_FILENAME);
 			
 			// Save this classifier to file.
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(App.MODEL_FILENAME)));
@@ -59,7 +59,7 @@ public class Example {
 			}
 
 			// Test of classfication
-			app.classifyDesc("test_input.csv", App.WORDS_FILENAME);
+			app.classifyDesc("test_input2.csv", App.WORDS_FILENAME);
 
 		} catch (IOException e) {
 			e.printStackTrace();
