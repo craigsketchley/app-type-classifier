@@ -50,6 +50,8 @@ public class AppClassifier {
 			    
 			    app = new AppCategoryClassifier(ClassifierType.SVM, descfilename, labelfilename);
 				
+			    app.loadData();
+			    
 			    app.evaluate();
 		    	
 		    } else if (cmd.toLowerCase().charAt(0) == 't') {
@@ -67,6 +69,8 @@ public class AppClassifier {
 			    
 			    app = new AppCategoryClassifier(ClassifierType.SVM, descfilename, labelfilename);
 				
+			    app.loadData();
+			    
 		    	app.train();
 		    	
 		    	System.out.println("Saving model");
