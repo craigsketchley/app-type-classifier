@@ -195,15 +195,17 @@ public class AppCategoryClassifier implements Serializable {
 					CrossValidation cv = new CrossValidation(this.classifier);
 					
 					if (App.DEBUG) {
-						System.out.println("Evaluating...");				
+						System.out.println("Evaluating...");
 					}
+
+					System.out.println("Params: C=" + pre.C + " gamma=" + pre.gamma);
 					
 					// Perform cross-validation on the data set
 					Map<Object, PerformanceMeasure> perform = cv.crossValidation(this.data, App.NUM_OF_FOLDS);
 					
-					if (App.DEBUG) {
-						System.out.println("Done evaluating...");				
-					}
+//					if (App.DEBUG) {
+//						System.out.println("Done evaluating...");
+//					}
 					
 					double precision = 0;
 					double recall = 0;
@@ -221,7 +223,6 @@ public class AppCategoryClassifier implements Serializable {
 						count++;
 					}
 					
-					System.out.println("Params: C=" + pre.C + " gamma=" + pre.gamma);
 					System.out.println("Accuracy Avg:  " + (accuracy / count));
 					System.out.println("Precision Avg: " + (precision / count));
 					System.out.println("Recall Avg:    " + (recall / count));					
