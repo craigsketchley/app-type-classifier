@@ -203,7 +203,7 @@ public class Preprocessor {
 			
 			tfidfWriter.close();
 			
-			PrintWriter wordsWriter = new PrintWriter(App.WORDS_FILENAME, "UTF-8");
+			PrintWriter wordsWriter = new PrintWriter(outputFilename + ".words", "UTF-8");
 			
 			for (int wordIndex = 0; wordIndex < words.length; wordIndex++) {
 				wordsWriter.write(words[wordIndex] + ":" + wordDocCount.get(words[wordIndex]));
@@ -230,7 +230,7 @@ public class Preprocessor {
 	 * @param docCount
 	 * @return
 	 */
-	protected static double calcTfIdf(int docWordCount, int wordDocCount, int docCount) {
+	public static double calcTfIdf(int docWordCount, int wordDocCount, int docCount) {
 		return docWordCount * (Math.log(((double) docCount) / wordDocCount));	
 	}
 	

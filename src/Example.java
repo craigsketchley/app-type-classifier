@@ -1,8 +1,11 @@
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import util.App;
 import classifier.AppCategoryClassifier;
 import classifier.ClassifierType;
 
@@ -31,22 +34,37 @@ public class Example {
 			
 			app.loadData();
 			
-			app.evaluate();
+			app.train();
 			
-//			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("data/svm.ser")));
-//			// do the magic  
-//			oos.writeObject(app);
-//			// close the writing.
-//			oos.close();			
+			// Test of classfication
+			app.classifyDesc("test_input.csv", App.WORDS_FILENAME);
 			
-//			// Testing different classifiers...
-//			for (ClassifierType type : ClassifierType.values()) {
-//				System.out.println("Running " + type);
-//				app.setClassifier(type);
-//				app.evaluate();
-//			}
+			// Save this classifier to file.
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(App.MODEL_FILENAME)));
+			// do the magic  
+			oos.writeObject(app);
+			// close the writing.
+			oos.close();
+			
+			app = null;
+			
+			// Loading our trained model...
+			ObjectInputStream obj_in = new ObjectInputStream (new FileInputStream(new File(App.MODEL_FILENAME)));
+
+			// Read an object
+			Object obj = obj_in.readObject();
+
+			if (obj instanceof AppCategoryClassifier) {
+				app = (AppCategoryClassifier)obj;
+			}
+
+			// Test of classfication
+			app.classifyDesc("test_input.csv", App.WORDS_FILENAME);
 
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
