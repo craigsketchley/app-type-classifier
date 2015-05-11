@@ -14,7 +14,7 @@ public final class App {
 	public static final String DELIMITER = ",";
 
 	public static final int NUM_OF_FEATURES = 100;
-	public static final int NUM_OF_FOLDS = 1;
+	public static final int NUM_OF_FOLDS = 2;
 	
 	public static final boolean DEBUG = true;
 	
