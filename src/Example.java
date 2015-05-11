@@ -16,34 +16,28 @@ public class Example {
 
 	public static void main(String[] args) {
 
-		int numOfFeatures = 0;
-		if (args.length > 0) {
-			numOfFeatures = Integer.parseInt(args[0]);			
+		int cExp = 0, gammaExp = 0;
+		if (args.length > 1) {
+			cExp = Integer.parseInt(args[0]);			
+			gammaExp = Integer.parseInt(args[1]);			
 		}
 
 		try {
 			AppCategoryClassifier app = null;
-			if (args.length == 2) {
+			if (args.length == 3) {
 				app = new AppCategoryClassifier(
-						ClassifierType.SVM, args[1]);
-			} else if (args.length >= 3) {
+						ClassifierType.SVM, args[2]);
+			} else if (args.length >= 4) {
 				app = new AppCategoryClassifier(
-						ClassifierType.SVM, args[1], args[2]);
+						ClassifierType.SVM, args[2], args[3]);
 			} else {
 				System.out.println("Please provide input files as arguments");
 				return;
 			}
 			
 			app.loadData();
-			if (numOfFeatures > 0) {
-				app.selectFeatures(numOfFeatures);				
-				app.saveSelectedFeatures("data/selectedFeatures.ser");
-			} else if (numOfFeatures < 0) {
-				// load from file...
-				app.loadSelectedFeatures("data/selectedFeatures.ser");
-			}
 			
-			app.evaluate();
+			app.evaluate(cExp, gammaExp);
 			
 //			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("data/svm.ser")));
 //			// do the magic  

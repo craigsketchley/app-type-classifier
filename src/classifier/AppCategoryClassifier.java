@@ -178,56 +178,52 @@ public class AppCategoryClassifier implements Serializable {
 	 * Runs an evaluation technique on this classifer...
 	 * 
 	 */
-	public void evaluate() {
+	public void evaluate(int cExp, int gammaExp) {
 		if (this.loaded) {
 			if (App.DEBUG) {
 				System.out.println("Creating evaluator...");				
 			}
+	
+		    svm_parameter pre= new svm_parameter();
+		    pre.kernel_type = svm_parameter.RBF;
+		    pre.C = Math.pow(2, cExp);
+		    pre.gamma = Math.pow(2, gammaExp);
+		    ((LibSVM)this.classifier).setParameters(pre);
+
+			CrossValidation cv = new CrossValidation(this.classifier);
 			
-			for (int i = 0; i < 4; i++) {
-				for (int j = 0; j < 4; j++) {
-				    svm_parameter pre= new svm_parameter();
-				    pre.kernel_type = svm_parameter.RBF;
-				    pre.C = Math.pow(2, -5 + i * 4);
-				    pre.gamma = Math.pow(2, -15 + j * 4);
-				    ((LibSVM)this.classifier).setParameters(pre);
-
-					CrossValidation cv = new CrossValidation(this.classifier);
-					
-					if (App.DEBUG) {
-						System.out.println("Evaluating...");
-					}
-
-					System.out.println("Params: C=" + pre.C + " gamma=" + pre.gamma);
-					
-					// Perform cross-validation on the data set
-					Map<Object, PerformanceMeasure> perform = cv.crossValidation(this.data, App.NUM_OF_FOLDS);
-					
-//					if (App.DEBUG) {
-//						System.out.println("Done evaluating...");
-//					}
-					
-					double precision = 0;
-					double recall = 0;
-					double accuracy = 0;
-					int count = 0;
-					
-					for (Object c : perform.keySet()) {
-//				System.out.println("TF/PN:     " + perform.get(c));
-						accuracy += perform.get(c).getAccuracy();
-//				System.out.println("Accuracy:  " + perform.get(c).getAccuracy());
-						precision += perform.get(c).getPrecision();
-//				System.out.println("Precision: " + perform.get(c).getPrecision());
-						recall += perform.get(c).getRecall();
-//				System.out.println("Recall:    " + perform.get(c).getRecall());
-						count++;
-					}
-					
-					System.out.println("Accuracy Avg:  " + (accuracy / count));
-					System.out.println("Precision Avg: " + (precision / count));
-					System.out.println("Recall Avg:    " + (recall / count));					
-				}
+			if (App.DEBUG) {
+				System.out.println("Evaluating...");
 			}
+
+			System.out.println("Params: Cexp=" + cExp + " gammaExp=" + gammaExp);
+			
+			// Perform cross-validation on the data set
+			Map<Object, PerformanceMeasure> perform = cv.crossValidation(this.data, App.NUM_OF_FOLDS);
+			
+//			if (App.DEBUG) {
+//				System.out.println("Done evaluating...");
+//			}
+			
+			double precision = 0;
+			double recall = 0;
+			double accuracy = 0;
+			int count = 0;
+			
+			for (Object c : perform.keySet()) {
+//				System.out.println("TF/PN:     " + perform.get(c));
+				accuracy += perform.get(c).getAccuracy();
+//				System.out.println("Accuracy:  " + perform.get(c).getAccuracy());
+				precision += perform.get(c).getPrecision();
+//				System.out.println("Precision: " + perform.get(c).getPrecision());
+				recall += perform.get(c).getRecall();
+//				System.out.println("Recall:    " + perform.get(c).getRecall());
+				count++;
+			}
+			
+			System.out.println("Accuracy Avg:  " + (accuracy / count));
+			System.out.println("Precision Avg: " + (precision / count));
+			System.out.println("Recall Avg:    " + (recall / count));					
 			
 		} else {
 			System.out.println("Need to load the data before evaluating.");
