@@ -5,51 +5,29 @@
 Use the following command to compile:
 
 ```
-javac -cp "lib/*" -d bin src/classifier/*.java src/preprocessor/*.java src/util/*.java src/Example.java
+javac -cp "lib/*" -d bin src/classifier/*.java src/preprocessor/*.java src/util/*.java src/AppClassifier.java
 ```
 
 ## Running
 
-### Classification Evaluation
-
 Use the following command to run:
 
 ```
-java -cp bin:"lib/*" Example <num of features> <data file> <label file>
+java -cp bin:"lib/*" AppClassifier
 ```
 
-So for the full data set...
+You will be prompted to evaluate the classifier, train a model, or load a model. Please follow the on screen instructions.
+
+An example of evaluation mode would be:
 
 ```
-java -cp bin:"lib/*" Example 200 data/training_data.csv data/training_labels.csv
+Would you like to:
+    (e)valuate our classifier?
+    (t)rain our classifier and input test data?
+    (l)oad a previously trained model and input test data?
+e
+Evaluation Mode
+Enter training_desc filename and path: data/training_desc_500.csv
+Enter training_labels filename and path: data/training_labels.csv
+Preprocessing files...
 ```
-
-
-If you have a preprocessed file already, then run with a single file instead:
-
-```
-java -cp bin:"lib/*" Example <num of features> <processed file>
-```
-
-So for the full data set...
-
-```
-java -cp bin:"lib/*" Example 200 data/preprocessed.csv
-```
-
-
-### Preprocessing only
-
-To run the preprocessor only, use the following command...
-
-```
-java -cp bin:"lib/*" preprocessor.Preprocessor <data file> <label file> <output file>
-```
-
-So for the full data set, this would be...
-
-```
-java -cp bin:"lib/*" preprocessor.Preprocessor data/training_data.csv data/training_labels.csv
-```
-
-The output file is optional and will default to `data/preprocessed.csv`.
