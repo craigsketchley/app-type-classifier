@@ -30,7 +30,9 @@ public class Example {
 			for (ClassifierType type : ClassifierType.values()) {
 				System.out.println("Running " + type);
 				app.setClassifier(type);
-				app.evaluate();
+				//app.evaluate();
+				app.train();
+				break;
 			}
 
 		} catch (IOException e) {
