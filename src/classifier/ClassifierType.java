@@ -33,11 +33,6 @@ public enum ClassifierType {
 			break;
 		case SVM:
 			result = new LibSVM();
-//		    svm_parameter pre= new svm_parameter();
-//		    pre.kernel_type = svm_parameter.RBF;
-//		    pre.gamma = Math.pow(2, -15);
-//		    pre.C = Math.pow(2, -5);
-//		    ((LibSVM)result).setParameters(pre);
 		    break;
 		case ZEROR:
 			result = new ZeroR();

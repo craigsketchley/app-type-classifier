@@ -178,32 +178,28 @@ public class AppCategoryClassifier implements Serializable {
 	 * Runs an evaluation technique on this classifer...
 	 * 
 	 */
-	public void evaluate(int cExp, int gammaExp) {
+	public void evaluate() {
 		if (this.loaded) {
 			if (App.DEBUG) {
 				System.out.println("Creating evaluator...");				
 			}
 	
-		    svm_parameter pre= new svm_parameter();
-		    pre.kernel_type = svm_parameter.RBF;
-		    pre.C = Math.pow(2, cExp);
-		    pre.gamma = Math.pow(2, gammaExp);
-		    ((LibSVM)this.classifier).setParameters(pre);
+			svm_parameter pre= new svm_parameter();
+			pre.kernel_type = svm_parameter.LINEAR;
+			((LibSVM)this.classifier).setParameters(pre);
 
 			CrossValidation cv = new CrossValidation(this.classifier);
 			
 			if (App.DEBUG) {
 				System.out.println("Evaluating...");
 			}
-
-			System.out.println("Params: Cexp=" + cExp + " gammaExp=" + gammaExp);
 			
 			// Perform cross-validation on the data set
 			Map<Object, PerformanceMeasure> perform = cv.crossValidation(this.data, App.NUM_OF_FOLDS);
 			
-//			if (App.DEBUG) {
-//				System.out.println("Done evaluating...");
-//			}
+			if (App.DEBUG) {
+				System.out.println("Done evaluating...");
+			}
 			
 			double precision = 0;
 			double recall = 0;
@@ -211,13 +207,13 @@ public class AppCategoryClassifier implements Serializable {
 			int count = 0;
 			
 			for (Object c : perform.keySet()) {
-//				System.out.println("TF/PN:     " + perform.get(c));
+				System.out.println("TF/PN:     " + perform.get(c));
 				accuracy += perform.get(c).getAccuracy();
-//				System.out.println("Accuracy:  " + perform.get(c).getAccuracy());
+				System.out.println("Accuracy:  " + perform.get(c).getAccuracy());
 				precision += perform.get(c).getPrecision();
-//				System.out.println("Precision: " + perform.get(c).getPrecision());
+				System.out.println("Precision: " + perform.get(c).getPrecision());
 				recall += perform.get(c).getRecall();
-//				System.out.println("Recall:    " + perform.get(c).getRecall());
+				System.out.println("Recall:    " + perform.get(c).getRecall());
 				count++;
 			}
 			

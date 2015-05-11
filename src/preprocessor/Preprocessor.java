@@ -177,17 +177,34 @@ public class Preprocessor {
 			}
 			
 			// Normalise each app tf-idf vector to unit vector...
-			double mag;
-			for (int vecIndex = 0; vecIndex < output.length; vecIndex++) {
-				mag = 0;
-				for (int i = 0; i < output[vecIndex].length; i++) {
-					mag += output[vecIndex][i] * output[vecIndex][i];
+//			double mag;
+//			for (int vecIndex = 0; vecIndex < output.length; vecIndex++) {
+//				mag = 0;
+//				for (int i = 0; i < output[vecIndex].length; i++) {
+//					mag += output[vecIndex][i] * output[vecIndex][i];
+//				}
+//				mag = Math.sqrt(mag);
+//
+//				for (int i = 0; i < output[vecIndex].length; i++) {
+//					double normVal = (mag != 0) ? output[vecIndex][i] / mag : 0;
+//					output[vecIndex][i] = normVal;
+//				}
+//			}
+			
+			// Normalise each attribute linearly to [0,1]
+			double max;
+			// Assumes at least 1 app
+			for (int attrIndex = 0; attrIndex < output[0].length; attrIndex++) {
+				max = 0;
+				for (int i = 0; i < output.length; i++) {
+					if (output[i][attrIndex] > max) {
+						max = output[i][attrIndex];
+					}
 				}
-				mag = Math.sqrt(mag);
 
-				for (int i = 0; i < output[vecIndex].length; i++) {
-					double normVal = (mag != 0) ? output[vecIndex][i] / mag : 0;
-					output[vecIndex][i] = normVal;
+				for (int i = 0; i < output[attrIndex].length; i++) {
+					double normVal = (max != 0) ? output[attrIndex][i] / max : 0;
+					output[attrIndex][i] = normVal;
 				}
 			}
 			

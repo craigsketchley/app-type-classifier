@@ -16,20 +16,14 @@ public class Example {
 
 	public static void main(String[] args) {
 
-		int cExp = 0, gammaExp = 0;
-		if (args.length > 1) {
-			cExp = Integer.parseInt(args[0]);			
-			gammaExp = Integer.parseInt(args[1]);			
-		}
-
 		try {
 			AppCategoryClassifier app = null;
-			if (args.length == 3) {
+			if (args.length == 1) {
 				app = new AppCategoryClassifier(
-						ClassifierType.SVM, args[2]);
-			} else if (args.length >= 4) {
+						ClassifierType.SVM, args[0]);
+			} else if (args.length >= 2) {
 				app = new AppCategoryClassifier(
-						ClassifierType.SVM, args[2], args[3]);
+						ClassifierType.SVM, args[0], args[1]);
 			} else {
 				System.out.println("Please provide input files as arguments");
 				return;
@@ -37,7 +31,7 @@ public class Example {
 			
 			app.loadData();
 			
-			app.evaluate(cExp, gammaExp);
+			app.evaluate();
 			
 //			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("data/svm.ser")));
 //			// do the magic  
