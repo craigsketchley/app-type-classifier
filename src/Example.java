@@ -35,21 +35,21 @@ public class Example {
 			app.loadData();
 			
 			app.train();
-			
-			// Test of classfication
-			app.classifyDesc("test_input1.csv", App.WORDS_FILENAME);
-			
+
 			// Save this classifier to file.
-			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(App.MODEL_FILENAME)));
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(args[0] + ".model")));
 			// do the magic  
 			oos.writeObject(app);
 			// close the writing.
 			oos.close();
 			
+			// Test of classfication
+			app.classifyDesc("test_input1.csv", App.WORDS_FILENAME);
+			
 			app = null;
 			
 			// Loading our trained model...
-			ObjectInputStream obj_in = new ObjectInputStream (new FileInputStream(new File(App.MODEL_FILENAME)));
+			ObjectInputStream obj_in = new ObjectInputStream (new FileInputStream(new File(args[0] + ".model")));
 
 			// Read an object
 			Object obj = obj_in.readObject();
