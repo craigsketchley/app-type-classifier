@@ -162,67 +162,57 @@ public class Preprocessor {
 			for (int appIndex = 0; appIndex < output.length; appIndex++) {
 				for (int wordIndex = 0; wordIndex < output[appIndex].length; wordIndex++) {
 					if (docMap.get(apps[appIndex]).containsKey(words[wordIndex])) {
-						output[appIndex][wordIndex] = 
-								docMap.get(apps[appIndex]).get(words[wordIndex]) *                       // tf
-								(Math.log(((double) apps.length) / wordDocCount.get(words[wordIndex]))); // idf						
+						output[appIndex][wordIndex] = calcTfIdf(
+								docMap.get(apps[appIndex]).get(words[wordIndex]),
+								apps.length,
+								wordDocCount.get(words[wordIndex]));
 					} else {
 						output[appIndex][wordIndex] = 0;
-					}
-					if (output[appIndex][wordIndex] < 0) {
-						System.out.println("tf: " + docMap.get(apps[appIndex]).get(words[wordIndex]));
-						System.out.println("idf: " + (Math.log(((double) apps.length) / wordDocCount.get(words[wordIndex]))));
-						System.out.println("No of docs with word in: " + wordDocCount.get(words[wordIndex]));
 					}
 				}
 			}
 			
 			// Normalise each app tf-idf vector to unit vector...
-//			double mag;
-//			for (int vecIndex = 0; vecIndex < output.length; vecIndex++) {
-//				mag = 0;
-//				for (int i = 0; i < output[vecIndex].length; i++) {
-//					mag += output[vecIndex][i] * output[vecIndex][i];
-//				}
-//				mag = Math.sqrt(mag);
-//
-//				for (int i = 0; i < output[vecIndex].length; i++) {
-//					double normVal = (mag != 0) ? output[vecIndex][i] / mag : 0;
-//					output[vecIndex][i] = normVal;
-//				}
-//			}
-			
-			// Normalise each attribute linearly to [0,1]
-			double max;
-			// Assumes at least 1 app
-			for (int attrIndex = 0; attrIndex < output[0].length; attrIndex++) {
-				max = 0;
-				for (int i = 0; i < output.length; i++) {
-					if (output[i][attrIndex] > max) {
-						max = output[i][attrIndex];
-					}
+			double mag;
+			for (int vecIndex = 0; vecIndex < output.length; vecIndex++) {
+				mag = 0;
+				for (int i = 0; i < output[vecIndex].length; i++) {
+					mag += output[vecIndex][i] * output[vecIndex][i];
 				}
+				mag = Math.sqrt(mag);
 
-				for (int i = 0; i < output[attrIndex].length; i++) {
-					double normVal = (max != 0) ? output[i][attrIndex] / max : 0;
-					output[i][attrIndex] = normVal;
+				for (int i = 0; i < output[vecIndex].length; i++) {
+					double normVal = (mag != 0) ? output[vecIndex][i] / mag : 0;
+					output[vecIndex][i] = normVal;
 				}
 			}
 			
-			PrintWriter writer = new PrintWriter(outputFilename, "UTF-8");
+			PrintWriter tfidfWriter = new PrintWriter(outputFilename, "UTF-8");
 
 			for (int appIndex = 0; appIndex < output.length; appIndex++) {
-				writer.write(apps[appIndex]);
+				tfidfWriter.write(apps[appIndex]);
 				for (int wordIndex = 0; wordIndex < output[appIndex].length; wordIndex++) {
 					if (output[appIndex][wordIndex] == 0) {
-						writer.write(App.DELIMITER + 0);
+						tfidfWriter.write(App.DELIMITER + 0);
 					} else {
-						writer.write(App.DELIMITER + output[appIndex][wordIndex]);
+						tfidfWriter.write(App.DELIMITER + output[appIndex][wordIndex]);
 					}
 				}
-				writer.write("\n");
+				tfidfWriter.write("\n");
 			}
 			
-			writer.close();
+			tfidfWriter.close();
+			
+			PrintWriter wordsWriter = new PrintWriter(App.WORDS_FILENAME, "UTF-8");
+			
+			for (int wordIndex = 0; wordIndex < words.length; wordIndex++) {
+				wordsWriter.write(words[wordIndex] + ":" + wordDocCount.get(words[wordIndex]));
+				if (wordIndex != words.length - 1) {
+					wordsWriter.write(",");
+				}
+			}
+			
+			wordsWriter.close();
 			
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found: " + e.getMessage());
@@ -233,6 +223,16 @@ public class Preprocessor {
 		}
 	}
 	
+	/**
+	 * Calculate the tf-idf given the appropriate counts.
+	 * @param docWordCount
+	 * @param wordDocCount
+	 * @param docCount
+	 * @return
+	 */
+	protected static double calcTfIdf(int docWordCount, int wordDocCount, int docCount) {
+		return docWordCount * (Math.log(((double) docCount) / wordDocCount));	
+	}
 	
 	
 	// Hide constructor, make it a static only class...

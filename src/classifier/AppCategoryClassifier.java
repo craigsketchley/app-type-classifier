@@ -162,13 +162,15 @@ public class AppCategoryClassifier implements Serializable {
 				System.out.println("Training model...");				
 			}
 			
-			this.classifier.buildClassifier(data);
+			this.classifier.buildClassifier(this.data);
 
 			if (App.DEBUG) {
 				System.out.println("Model trained...");				
 			}
 			
 			this.trained = true;
+			
+			// TODO: can we ditch the data? then serialise?
 		} else {
 			System.out.println("Need to load the data before training.");
 		}
