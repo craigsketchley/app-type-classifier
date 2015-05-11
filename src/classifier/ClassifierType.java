@@ -34,7 +34,7 @@ public enum ClassifierType {
 		case SVM:
 			result = new LibSVM();
 			LibSVM svm = ((LibSVM)result);
-			svm.setPrintInterface(LibSVM.svm_print_console);
+//			svm.setPrintInterface(LibSVM.svm_print_console);
 		    svm_parameter pre= new svm_parameter();
 		    pre.kernel_type= svm_parameter.RBF;
 		    pre.gamma= 3;
