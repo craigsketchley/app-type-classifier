@@ -11,6 +11,7 @@ import java.util.HashMap;
 import util.App;
 
 /**
+ * Our class responsible for preprocessing.
  * 
  * @author Nick Hough
  * @author Craig Sketchley
@@ -30,20 +31,21 @@ public class Preprocessor {
 					processTrainingFiles(args[0], args[1]);
 				} else if (args.length >= 3) {
 					processTrainingFiles(args[0], args[1], args[2]);
-				}	
+				}
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Process the training data and label files into one output file.
 	 * 
 	 * @param dataFilename
 	 * @param labelFilename
 	 */
-	public static String processTrainingFiles(String dataFilename, String labelFilename) {
-		return processTrainingFiles(dataFilename, labelFilename, App.TEMP_FILENAME);
+	public static String processTrainingFiles(String dataFilename,
+			String labelFilename) {
+		return processTrainingFiles(dataFilename, labelFilename,
+				App.TEMP_FILENAME);
 	}
 
 	/**
@@ -53,7 +55,8 @@ public class Preprocessor {
 	 * @param labelFilename
 	 * @param outputFilename
 	 */
-	public static String processTrainingFiles(String dataFilename, String labelFilename, String outputFilename) {
+	public static String processTrainingFiles(String dataFilename,
+			String labelFilename, String outputFilename) {
 		HashMap<String, String> map = new HashMap<String, String>();
 
 		try {
@@ -61,7 +64,8 @@ public class Preprocessor {
 			FileReader labelsReader = new FileReader(new File(labelFilename));
 			PrintWriter writer = new PrintWriter(outputFilename, "UTF-8");
 
-			// Read in the labels first, saving them to a map of App Name to category.
+			// Read in the labels first, saving them to a map of App Name to
+			// category.
 			BufferedReader br = new BufferedReader(labelsReader);
 
 			// Variable to hold the one line data
@@ -83,13 +87,13 @@ public class Preprocessor {
 				// Split the app name from tf-idf vector
 				String[] pair = line.split(App.DELIMITER, 2);
 
-				// Write the category name and tf-idf values to 
+				// Write the category name and tf-idf values to
 				writer.write(map.get(pair[0]) + App.DELIMITER + pair[1] + "\n");
 			}
-		
+
 			br.close();
 			writer.close();
-			
+
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found: " + e.getMessage());
 			e.printStackTrace();
@@ -99,79 +103,99 @@ public class Preprocessor {
 			e.printStackTrace();
 			return null;
 		}
-		
+
 		return outputFilename;
 	}
-	
-	
-	
+
+	/**
+	 * Generate a tf-idf matrix for the given description file in csv format. It
+	 * will output the result to the provided output filename.
+	 * 
+	 * @param descriptionFilename
+	 * @param outputFilename
+	 */
 	public static void generateTfIdf(String descriptionFilename, String outputFilename) {
-		// Map for all the words in a document and their counts within that document.
+		// Map for all the words in a document and their counts within that
+		// document.
 		HashMap<String, HashMap<String, Integer>> docMap = new HashMap<String, HashMap<String, Integer>>();
-		
+
 		// Map for all words and their document count
 		HashMap<String, Integer> wordDocCount = new HashMap<String, Integer>();
-				
+
 		try {
-			FileReader descReader = new FileReader(new File(descriptionFilename));
+			FileReader descReader = new FileReader(
+					new File(descriptionFilename));
 
 			// Variable to hold the one line data
 			String line;
 
 			// Read in the tf-idf values
 			BufferedReader br = new BufferedReader(descReader);
-			
+
 			// Read file line by line...
 			while ((line = br.readLine()) != null) {
 				// Split the app name from description words
 				String[] words = line.split(App.DELIMITER);
-				
+
 				docMap.put(words[0], new HashMap<String, Integer>());
-				
-				// App name is at index 0
-				for (int i = 1; i < words.length; i++) {
+
+				// Save word against document (app desc) with count and number
+				// of docs word appears.
+				for (int i = 1; i < words.length; i++) { // App name is at index 0
 					if (!docMap.get(words[0]).containsKey(words[i])) {
 						if (wordDocCount.containsKey(words[i])) {
-							wordDocCount.put(words[i], wordDocCount.get(words[i]) + 1);
+							wordDocCount.put(words[i],
+									wordDocCount.get(words[i]) + 1);
 						} else {
 							wordDocCount.put(words[i], 1);
 						}
 					}
 					if (docMap.get(words[0]).containsKey(words[i])) {
-						docMap.get(words[0]).put(words[i], docMap.get(words[0]).get(words[i]) + 1);
+						docMap.get(words[0]).put(words[i],
+								docMap.get(words[0]).get(words[i]) + 1);
 					} else {
 						docMap.get(words[0]).put(words[i], 1);
 					}
 				}
 			}
-			
+
 			br.close();
 			br = null;
-			
-			System.out.println("Done scanning file.");
-			
-			String[] words = wordDocCount.keySet().toArray(new String[wordDocCount.size()]);
+
+			if (App.DEBUG) {
+				System.out.println("Done scanning description file.");				
+			}
+
+			// Get all words and all apps.
+			String[] words = wordDocCount.keySet().toArray(
+					new String[wordDocCount.size()]);
 			String[] apps = docMap.keySet().toArray(new String[docMap.size()]);
-			
+
 			// Now get the if-idf values...
+
+			// A word-app matrix...
 			double[][] output = new double[apps.length][words.length];
-			
-			System.out.println("Doc count: " + apps.length);
-			System.out.println("Word count: " + words.length);
-			
+
+			if (App.DEBUG) {
+				System.out.println("Doc count: " + apps.length);
+				System.out.println("Word count: " + words.length);
+			}
+
+			// Calc tf-idf for each cell in word-app martix
 			for (int appIndex = 0; appIndex < output.length; appIndex++) {
 				for (int wordIndex = 0; wordIndex < output[appIndex].length; wordIndex++) {
-					if (docMap.get(apps[appIndex]).containsKey(words[wordIndex])) {
+					if (docMap.get(apps[appIndex])
+							.containsKey(words[wordIndex])) {
 						output[appIndex][wordIndex] = calcTfIdf(
-								docMap.get(apps[appIndex]).get(words[wordIndex]),
-								apps.length,
+								docMap.get(apps[appIndex])
+										.get(words[wordIndex]), apps.length,
 								wordDocCount.get(words[wordIndex]));
 					} else {
 						output[appIndex][wordIndex] = 0;
 					}
 				}
 			}
-			
+
 			// Normalise each app tf-idf vector to unit vector...
 			double mag;
 			for (int vecIndex = 0; vecIndex < output.length; vecIndex++) {
@@ -186,7 +210,8 @@ public class Preprocessor {
 					output[vecIndex][i] = normVal;
 				}
 			}
-			
+
+			// Write tfidf matrix to file.
 			PrintWriter tfidfWriter = new PrintWriter(outputFilename, "UTF-8");
 
 			for (int appIndex = 0; appIndex < output.length; appIndex++) {
@@ -195,25 +220,29 @@ public class Preprocessor {
 					if (output[appIndex][wordIndex] == 0) {
 						tfidfWriter.write(App.DELIMITER + 0);
 					} else {
-						tfidfWriter.write(App.DELIMITER + output[appIndex][wordIndex]);
+						tfidfWriter.write(App.DELIMITER
+								+ output[appIndex][wordIndex]);
 					}
 				}
 				tfidfWriter.write("\n");
 			}
-			
+
 			tfidfWriter.close();
-			
-			PrintWriter wordsWriter = new PrintWriter(outputFilename + ".words", "UTF-8");
-			
+
+			// Write identified words to a words file
+			PrintWriter wordsWriter = new PrintWriter(
+					outputFilename + ".words", "UTF-8");
+
 			for (int wordIndex = 0; wordIndex < words.length; wordIndex++) {
-				wordsWriter.write(words[wordIndex] + ":" + wordDocCount.get(words[wordIndex]));
+				wordsWriter.write(words[wordIndex] + ":"
+						+ wordDocCount.get(words[wordIndex]));
 				if (wordIndex != words.length - 1) {
 					wordsWriter.write(",");
 				}
 			}
-			
+
 			wordsWriter.close();
-			
+
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found: " + e.getMessage());
 			e.printStackTrace();
@@ -222,19 +251,21 @@ public class Preprocessor {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Calculate the tf-idf given the appropriate counts.
+	 * 
 	 * @param docWordCount
 	 * @param wordDocCount
 	 * @param docCount
 	 * @return
 	 */
-	public static double calcTfIdf(int docWordCount, int wordDocCount, int docCount) {
-		return docWordCount * (Math.log(((double) docCount) / wordDocCount));	
+	public static double calcTfIdf(int docWordCount, int wordDocCount,
+			int docCount) {
+		return docWordCount * (Math.log(((double) docCount) / wordDocCount));
 	}
-	
-	
+
 	// Hide constructor, make it a static only class...
-	private Preprocessor() {}
+	private Preprocessor() {
+	}
 }

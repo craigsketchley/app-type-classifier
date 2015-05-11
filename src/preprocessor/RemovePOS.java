@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import opennlp.tools.postag.POSModel;
@@ -16,9 +15,22 @@ import opennlp.tools.postag.POSTaggerME;
 import opennlp.tools.tokenize.Tokenizer;
 import opennlp.tools.tokenize.TokenizerME;
 import opennlp.tools.tokenize.TokenizerModel;
+import util.App;
 
+/**
+ * Our NLP processing class.
+ * 
+ * @author Nick Hough
+ * @author Craig Sketchley
+ *
+ */
 public class RemovePOS {
 
+	/**
+	 * Quick check to see if a word only contains alpha characters.
+	 * @param name
+	 * @return
+	 */
 	public static boolean isAlpha(String name) {
 		char[] chars = name.toCharArray();
 
@@ -31,6 +43,13 @@ public class RemovePOS {
 		return true;
 	}
 
+	/**
+	 * Processes the description file, filtering out words based on NLP techniques.
+	 * 
+	 * @param descFilename
+	 * @param outputFilename
+	 * @throws FileNotFoundException
+	 */
 	public static void processDescriptions(String descFilename, String outputFilename) throws FileNotFoundException {
 
 		final String DESCRIPTION_FILE = descFilename;
@@ -62,7 +81,9 @@ public class RemovePOS {
 			String line;
 
 			// Read file line by line...
-			System.out.println("Starting Description Filtering");
+			if (App.DEBUG) {
+				System.out.println("Starting Description Filtering");
+			}
 			while ((line = br.readLine()) != null) {
 
 				// Split the app name from category name
@@ -99,7 +120,9 @@ public class RemovePOS {
 				}
 				writer.write("\n");
 			}
-			System.out.println("Finished Description Filtering");
+			if (App.DEBUG) {
+				System.out.println("Finished Description Filtering");
+			}
 			br.close();
 			writer.close();
 

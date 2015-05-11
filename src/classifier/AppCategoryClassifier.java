@@ -2,13 +2,9 @@ package classifier;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,8 +12,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 
-import libsvm.LibSVM;
-import libsvm.svm_parameter;
 import preprocessor.Preprocessor;
 import preprocessor.RemovePOS;
 import util.App;
@@ -33,6 +27,7 @@ import net.sf.javaml.filter.RetainAttributes;
 import net.sf.javaml.tools.data.FileHandler;
 
 /**
+ * Our main classifier class.
  * 
  * @author Nick Hough
  * @author Craig Sketchley
@@ -46,26 +41,70 @@ public class AppCategoryClassifier implements Serializable {
 	private Classifier classifier;
 	private String processedFilename;
 	private Set<Integer> selectedFeatures;
+	private ArrayList<String> wordList;
+	private HashMap<String, Integer> wordDocCounts;
 	private boolean trained;
 	private boolean loaded;
+	@SuppressWarnings("unused")
 	private boolean selected;
 	private Dataset data;
 	private int docCount;
 	
 	/**
-	 * Construct a classifier from 2 separate data and labels files.
+	 * Construct a classifier from 2 separate desc and labels files. It will process the given description file and generate a tf-idf matrix.
 	 * 
-	 * @param trainingDataFilename
+	 * @param trainingDescFilename
 	 * @param trainingLabelsFilename
 	 * @throws IOException
 	 */
-	public AppCategoryClassifier(ClassifierType classifierType, String trainingDataFilename, String trainingLabelsFilename) throws IOException {
+	public AppCategoryClassifier(ClassifierType classifierType, String trainingDescFilename, String trainingLabelsFilename) throws IOException {
 		if (App.DEBUG) {
 			System.out.println("Preprocessing files...");
 		}
 		
-		this.processedFilename = Preprocessor.processTrainingFiles(trainingDataFilename, trainingLabelsFilename);
+		// NLP Processing
+		RemovePOS.processDescriptions(trainingDescFilename, App.TEMP_FILENAME + "1");
+		
+		// TF-IDF matrix generation
+		Preprocessor.generateTfIdf(App.TEMP_FILENAME + "1", App.TEMP_FILENAME + "2");
+		
+		// Clean up temp file...
+		(new File(App.TEMP_FILENAME + "1")).delete();
+		
+		// Joining tf-idf values with classes from labels file
+		this.processedFilename = Preprocessor.processTrainingFiles(App.TEMP_FILENAME + "2", trainingLabelsFilename, trainingDescFilename + ".processed");
 	
+		// Clean up temp file...
+		(new File(App.TEMP_FILENAME + "2")).delete();
+		
+		// Load identified words...
+		this.wordList = new ArrayList<String>();
+		this.wordDocCounts = new HashMap<String, Integer>(); 
+
+		FileReader wordsReader = new FileReader(new File(App.TEMP_FILENAME + "2.words"));
+
+		// Variable to hold the one line data
+		String line;
+		
+		// Read in the labels first, saving them to a map of App Name to category.
+		BufferedReader br = new BufferedReader(wordsReader);
+		
+		// Read in the words
+		while ((line = br.readLine()) != null) {
+			// Split the words
+			String[] pairs = line.split(App.DELIMITER);
+			for (int i = 0; i < pairs.length; i++) {
+				// Split the word from the word doc count
+				String[] wordDocCount = pairs[i].split(":");
+				// Add to word list
+				this.wordList.add(wordDocCount[0]);
+				// Add the word doc counts to the map.
+				this.wordDocCounts.put(wordDocCount[0], Integer.parseInt(wordDocCount[1]));
+			}
+		}
+		
+		br.close();
+		
 		if (App.DEBUG) {
 			System.out.println("Files processed...");
 		}
@@ -73,18 +112,6 @@ public class AppCategoryClassifier implements Serializable {
 		this.setClassifier(classifierType);
 	}
 
-	/**
-	 * Construct a classifier from a preprocessed data file.
-	 * 
-	 * @param processedFilename
-	 * @throws IOException
-	 */
-	public AppCategoryClassifier(ClassifierType classifierType, String processedFilename) throws IOException {
-		this.processedFilename = processedFilename;
-		
-		this.setClassifier(classifierType);
-	}
-	
 	/**
 	 * Set the classifier type.
 	 * 
@@ -118,9 +145,9 @@ public class AppCategoryClassifier implements Serializable {
 	}
 		
 	/**
+	 * NOTE: Not in use!!!
+	 * 
 	 * Selects and filters the data features ready for training.
-	 *  
-	 * Note: this was not used in our final solution. 
 	 */
 	public void selectFeatures(int numOfFeatures) {
 		if (this.loaded) {
@@ -189,10 +216,6 @@ public class AppCategoryClassifier implements Serializable {
 				System.out.println("Creating evaluator...");				
 			}
 	
-			svm_parameter pre= new svm_parameter();
-			pre.kernel_type = svm_parameter.LINEAR;
-			((LibSVM)this.classifier).setParameters(pre);
-
 			CrossValidation cv = new CrossValidation(this.classifier);
 			
 			if (App.DEBUG) {
@@ -237,31 +260,8 @@ public class AppCategoryClassifier implements Serializable {
 	 * @param inputFilename
 	 * @throws IOException 
 	 */
-	public void classifyDesc(String inputDescFilename, String wordsFilename) throws IOException {
-		if (this.loaded) {
-
-			HashMap<String, Integer> wordDocCounts = new HashMap<String, Integer>(); 
-			ArrayList<String> wordList = new ArrayList<String>();
-			
-			FileReader wordsReader = new FileReader(new File(wordsFilename));
-			// Variable to hold the one line data
-			String line;
-			
-			// Read in the labels first, saving them to a map of App Name to category.
-			BufferedReader br = new BufferedReader(wordsReader);
-			
-			// Read in the feature words together with their document counts.
-			while ((line = br.readLine()) != null) {
-				// Split the app name from tf-idf vector
-				String[] pairs = line.split(App.DELIMITER);
-				
-				for (int i = 0; i < pairs.length; i++) {
-					String[] wordDocCount = pairs[i].split(":");
-					wordList.add(wordDocCount[0]);
-					wordDocCounts.put(wordDocCount[0], Integer.parseInt(wordDocCount[1]));
-				}
-			}
-			
+	public void classifyDesc(String inputDescFilename) throws IOException {
+		if (this.trained) {
 			// Process descriptions of input files.
 			RemovePOS.processDescriptions(inputDescFilename, App.TEMP_FILENAME);
 			
@@ -269,9 +269,11 @@ public class AppCategoryClassifier implements Serializable {
 			FileReader descReader = new FileReader(new File(App.TEMP_FILENAME));
 
 			// Read in the labels first, saving them to a map of App Name to category.
-			br = new BufferedReader(descReader);
+			BufferedReader br = new BufferedReader(descReader);
 						
 			PrintWriter writer = new PrintWriter(inputDescFilename + ".class", "UTF-8");
+			
+			String line;
 			
 			// Read file line by line...
 			while ((line = br.readLine()) != null) {
@@ -294,7 +296,7 @@ public class AppCategoryClassifier implements Serializable {
 				
 				for (int i = 0; i < tfidfs.length; i++) {
 					if (docMap.containsKey(wordList.get(i))) {
-						tfidfs[i] = Preprocessor.calcTfIdf(docMap.get(wordList.get(i)), wordDocCounts.get(wordList.get(i)), this.docCount);													
+						tfidfs[i] = Preprocessor.calcTfIdf(docMap.get(wordList.get(i)), this.wordDocCounts.get(wordList.get(i)), this.docCount);													
 					} else {
 						tfidfs[i] = 0.0;
 					}
@@ -320,7 +322,7 @@ public class AppCategoryClassifier implements Serializable {
 	 * @throws IOException 
 	 */
 	public void classify(String inputFilename, String outputFilename) throws IOException {
-		if (this.loaded) {
+		if (this.trained) {
 			// Load data...
 			FileReader labelsReader = new FileReader(new File(inputFilename));
 			PrintWriter writer = new PrintWriter(outputFilename, "UTF-8");
@@ -352,7 +354,7 @@ public class AppCategoryClassifier implements Serializable {
 			br.close();
 			writer.close();
 		} else {
-			System.out.println("Need to load the data before classifying.");
+			System.out.println("Need to train the classifier before classifying.");
 		}
 	}
 	
@@ -363,53 +365,12 @@ public class AppCategoryClassifier implements Serializable {
 	 * @return
 	 */
 	private String classify(Instance inst) {
-		if (this.loaded) {
+		if (this.trained) {
 			return this.classifier.classify(inst).toString();			
-		} else if (this.loaded) {
-			System.out.println("Need to run feature selection before classifying.");
 		} else {
-			System.out.println("Need to load the data before classifying.");
+			System.out.println("Need to train the classifier before classifying.");
 		}
 		return "<No class>";
-	}
-	
-	/**
-	 * Save the selected features to use again.
-	 * 
-	 * @param filename
-	 * @throws IOException
-	 */
-	public void saveSelectedFeatures(String filename) throws IOException {
-		if (this.loaded) {
-			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File(filename)));
-			// do the magic  
-			oos.writeObject(this.selectedFeatures);
-			// close the writing.
-			oos.close();			
-		} else {
-			System.out.println("Data not loaded. Please load data before saving selected features.");
-		}
-	}
-	
-	/**
-	 * Loads the selected features from a previous feature selection.
-	 * 
-	 * @param filename
-	 * @throws FileNotFoundException
-	 * @throws IOException
-	 */
-	@SuppressWarnings("unchecked")
-	public void loadSelectedFeatures(String filename) throws FileNotFoundException, IOException {
-		ObjectInputStream oos = new ObjectInputStream(                                 
-                new FileInputStream(  new File(filename)) ) ;
-		try {
-			this.selectedFeatures = (Set<Integer>)oos.readObject();
-		} catch (ClassNotFoundException e) {
-			System.out.println("File is not a recognised format. Is it corrupt?");
-		} catch (RuntimeException e) {
-			System.out.println("File is not a recognised format. Is it corrupt?");
-		}
-		oos.close();
 	}
 
 }

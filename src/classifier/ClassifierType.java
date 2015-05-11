@@ -23,7 +23,6 @@ public enum ClassifierType {
 	RANDOM_FOREST200,
 	SOM;
 	
-	@SuppressWarnings("static-access")
 	public Classifier getClassifier() {
 		Classifier result = null;
 		
