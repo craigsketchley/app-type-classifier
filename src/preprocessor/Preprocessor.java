@@ -191,7 +191,7 @@ public class Preprocessor {
 
 			for (int appIndex = 0; appIndex < output.length; appIndex++) {
 				tfidfWriter.write(apps[appIndex]);
-				for (int wordIndex = 0; wordIndex < output[appIndex].length; wordIndex++) {
+				for (int wordIndex = 0; wordIndex < words.length; wordIndex++) {
 					if (output[appIndex][wordIndex] == 0) {
 						tfidfWriter.write(App.DELIMITER + 0);
 					} else {
