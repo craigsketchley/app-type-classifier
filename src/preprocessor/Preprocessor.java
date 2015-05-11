@@ -203,8 +203,8 @@ public class Preprocessor {
 				}
 
 				for (int i = 0; i < output[attrIndex].length; i++) {
-					double normVal = (max != 0) ? output[attrIndex][i] / max : 0;
-					output[attrIndex][i] = normVal;
+					double normVal = (max != 0) ? output[i][attrIndex] / max : 0;
+					output[i][attrIndex] = normVal;
 				}
 			}
 			
