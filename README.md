@@ -31,3 +31,7 @@ Enter training_desc filename and path: data/training_desc_500.csv
 Enter training_labels filename and path: data/training_labels.csv
 Preprocessing files...
 ```
+
+## Other features
+
+Whilst our program is a SVM classifier, other classifiers were added during our testing. These can be found in `src/classifier/ClassifierType.java`. Modifying the `src/AppClassifier.java` would allow for other classifiers to be tested.

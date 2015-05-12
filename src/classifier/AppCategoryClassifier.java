@@ -302,6 +302,18 @@ public class AppCategoryClassifier implements Serializable {
 					}
 				}
 								
+				// Normalise each app tf-idf vector to unit vector...
+				double mag = 0;
+				for (int i = 0; i < tfidfs.length; i++) {
+					mag += tfidfs[i] * tfidfs[i];
+				}
+				mag = Math.sqrt(mag);
+
+				for (int i = 0; i < tfidfs.length; i++) {
+					double normVal = (mag != 0) ? tfidfs[i] / mag : 0;
+					tfidfs[i] = normVal;
+				}
+
 				Instance inst = new DenseInstance(tfidfs);
 				
 				// Write the category name and tf-idf values to 
